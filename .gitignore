@@ -1,0 +1,7 @@
+/.pytest_cache
+/.venv
+/.vscode
+/STRUCTURE.md
+/arxiv_faiss.index
+/arxiv_metadata.pkl
+/pytest.ini
