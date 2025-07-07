@@ -47,7 +47,7 @@ class FaissVectorStore:
         if metadatas is None:
             metadatas = [{} for _ in texts]
         embeddings = self._embed_texts(texts)  # Placeholder; replace if needed
-        self.index.add(np.array(embeddings).astype("float32"))
+        self.index.add(np.array(embeddings).astype("float32"))  # type: ignore
         self.texts.extend(texts)
         self.metadatas.extend(metadatas)
         self._save()
@@ -66,7 +66,7 @@ class FaissVectorStore:
             matches.
         """
         query = np.array([query_embedding]).astype("float32")
-        distances, indices = self.index.search(query, k)
+        distances, indices = self.index.search(query, k)  # type: ignore
         return [(self.texts[i], self.metadatas[i]) for i in indices[0]]
 
     def _embed_texts(self, texts: List[str]) -> List[List[float]]:

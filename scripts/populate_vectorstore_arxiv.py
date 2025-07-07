@@ -40,7 +40,9 @@ def build_arxiv_vectorstore(
     vectorstore = FaissVectorStore(
         dim=dim, index_path=out_index_path, metadata_path=out_metadata_path
     )
-    vectorstore.index.add(np.array(embeddings).astype("float32"))
+    vectorstore.index.add(
+        np.array(embeddings).astype("float32")  # type: ignore
+    )
     vectorstore.texts.extend(abstracts)
     vectorstore.metadatas.extend(metadatas)
     vectorstore._save()
