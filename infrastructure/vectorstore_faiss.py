@@ -1,5 +1,5 @@
 import pickle
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 
 import faiss
 import numpy as np
@@ -21,20 +21,20 @@ class FaissVectorStore:
         dim: int,
         index_path: str = "index/faiss.index",
         metadata_path: str = "index/metadata.pkl",
-    ):
+    ) -> None:
         """
         Initialize the FaissVectorStore with embedding dimension, index path,
         and metadata path.
         """
-        self.dim = dim
-        self.index_path = index_path
-        self.metadata_path = metadata_path
-        self.index = faiss.IndexFlatL2(dim)
+        self.dim: int = dim
+        self.index_path: str = index_path
+        self.metadata_path: str = metadata_path
+        self.index: Any = faiss.IndexFlatL2(dim)
         self.texts: List[str] = []
-        self.metadatas: List[dict] = []
+        self.metadatas: List[Dict] = []
 
     def add_texts(
-        self, texts: List[str], metadatas: Optional[List[dict]] = None
+        self, texts: List[str], metadatas: Optional[List[Dict]] = None
     ) -> None:
         """
         Add texts and their metadata to the vector store.
@@ -46,7 +46,9 @@ class FaissVectorStore:
         """
         if metadatas is None:
             metadatas = [{} for _ in texts]
-        embeddings = self._embed_texts(texts)  # Placeholder; replace if needed
+        embeddings: List[List[float]] = self._embed_texts(
+            texts
+        )  # Placeholder; replace if needed
         self.index.add(np.array(embeddings).astype("float32"))  # type: ignore
         self.texts.extend(texts)
         self.metadatas.extend(metadatas)
@@ -54,7 +56,7 @@ class FaissVectorStore:
 
     def similarity_search(
         self, query_embedding: List[float], k: int = 5
-    ) -> List[Tuple[str, dict]]:
+    ) -> List[Tuple[str, Dict]]:
         """
         Perform a similarity search for the given query embedding.
 
@@ -65,8 +67,10 @@ class FaissVectorStore:
             List[Tuple[str, dict]]: List of (text, metadata) tuples for the top
             matches.
         """
-        query = np.array([query_embedding]).astype("float32")
-        distances, indices = self.index.search(query, k)  # type: ignore
+        query: np.ndarray = np.array([query_embedding]).astype("float32")
+        distances: np.ndarray
+        indices: np.ndarray
+        distances, indices = self.index.search(query, k)
         return [(self.texts[i], self.metadatas[i]) for i in indices[0]]
 
     def _embed_texts(self, texts: List[str]) -> List[List[float]]:
@@ -83,7 +87,7 @@ class FaissVectorStore:
             "Use embedder externally; this is a placeholder."
         )
 
-    def _save(self):
+    def _save(self) -> None:
         """
         Save the FAISS index and metadata to disk.
         """
@@ -91,7 +95,7 @@ class FaissVectorStore:
         with open(self.metadata_path, "wb") as f:
             pickle.dump((self.texts, self.metadatas), f)
 
-    def load(self):
+    def load(self) -> None:
         """
         Load the FAISS index and metadata from disk.
         """
