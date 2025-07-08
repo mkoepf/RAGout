@@ -6,6 +6,12 @@ repos:
       - id: trailing-whitespace
       - id: check-added-large-files
 
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.1  # or latest
+    hooks:
+      - id: gitleaks
+        name: Check for sensitive data with gitleaks
+
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.4.4
     hooks:
@@ -19,11 +25,17 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
-      - id: pytest-all
-        name: Run all tests
-        entry: pytest
+      - id: pytest-fast
+        name: Run fast tests
+        entry: pytest -m "not integration"
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
+      - id: pytest-slow
+        name: Run slow tests
+        entry: pytest -m "integration"
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
