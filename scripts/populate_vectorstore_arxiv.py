@@ -36,6 +36,8 @@ def build_arxiv_vectorstore(
     embeddings = [embedder.embed_query(text) for text in abstracts]
     dim = len(embeddings[0])
 
+    print(f"Embedding dimension: {dim}")
+
     print("Building vector store...")
     vectorstore = FaissVectorStore(
         dim=dim, index_path=out_index_path, metadata_path=out_metadata_path
